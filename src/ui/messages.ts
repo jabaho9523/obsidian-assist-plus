@@ -1,4 +1,5 @@
 import { App, Component, MarkdownRenderer } from "obsidian";
+import { SuggestHunk, parseSuggestBlocks } from "../edits/suggest-parser";
 import { ChatMessage } from "../types";
 
 /**
@@ -10,6 +11,11 @@ export interface MessageDeps {
 	app: App;
 	component: Component;
 	onRetry: (assistantMessage: ChatMessage) => void;
+	/**
+	 * Present ONLY in Suggest mode. When absent (Read-only), suggest blocks
+	 * render as plain fenced code and there is no path to an apply.
+	 */
+	onReviewSuggestions?: (hunks: SuggestHunk[]) => void;
 }
 
 export function renderMessage(
@@ -54,6 +60,21 @@ export function renderMessage(
 			"",
 			deps.component
 		);
+	}
+
+	if (
+		message.role === "assistant" &&
+		message.status === "complete" &&
+		deps.onReviewSuggestions
+	) {
+		const hunks = parseSuggestBlocks(message.text);
+		if (hunks.length > 0) {
+			const review = wrapper.createEl("button", {
+				cls: "mod-cta assist-plus-suggest-review",
+				text: `Review ${hunks.length} suggested ${hunks.length === 1 ? "edit" : "edits"}…`,
+			});
+			review.addEventListener("click", () => deps.onReviewSuggestions?.(hunks));
+		}
 	}
 
 	if (message.stopped) {

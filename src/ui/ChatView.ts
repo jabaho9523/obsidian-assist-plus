@@ -8,6 +8,7 @@ import {
 	sanitize,
 	sendChat,
 } from "../api/client";
+import { SuggestDiffModal } from "../edits/diff-modal";
 import { effectiveDefaultModel } from "../settings";
 import { ChatMessage, Conversation, generateId } from "../types";
 import { AttachFileModal } from "./attach-modal";
@@ -190,6 +191,18 @@ export class ChatView extends ItemView {
 			component: this,
 			onRetry: (m) => void this.retry(m),
 		};
+		// The apply path exists only in Suggest mode; Read-only mode passes no
+		// handler, so suggestions render as inert text.
+		if (this.plugin.settings.editMode === "suggest") {
+			deps.onReviewSuggestions = (hunks) => {
+				new SuggestDiffModal(
+					this.app,
+					this.plugin.scope,
+					this.conversation,
+					hunks
+				).open();
+			};
+		}
 		let streamingBody: HTMLElement | null = null;
 		for (const message of this.conversation.messages) {
 			const { bodyEl } = renderMessage(this.messagesEl, message, deps);
