@@ -280,28 +280,103 @@
 	color: var(--text-success);
 }
 
+.assist-plus-diff-tabs {
+	display: flex;
+	gap: var(--size-2-1);
+	padding: var(--size-2-1) var(--size-4-2);
+	background: var(--background-secondary);
+	border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.assist-plus-diff-tab {
+	background: none;
+	border: none;
+	box-shadow: none;
+	padding: var(--size-2-1) var(--size-2-3);
+	border-radius: var(--radius-s);
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	cursor: pointer;
+}
+
+.assist-plus-diff-tab.is-active {
+	background: var(--background-modifier-hover);
+	color: var(--text-normal);
+	font-weight: var(--font-medium);
+}
+
 .assist-plus-diff-body {
 	display: flex;
 	flex-direction: column;
 }
 
-.assist-plus-diff-block {
-	margin: 0;
-	padding: var(--size-2-3) var(--size-4-2);
-	white-space: pre-wrap;
-	word-break: break-word;
+.assist-plus-diff-lines {
 	font-family: var(--font-monospace);
 	font-size: var(--font-smaller);
+	padding: var(--size-2-3) 0;
+	overflow-x: auto;
 }
 
-.assist-plus-diff-before {
-	background: rgba(var(--color-red-rgb), 0.08);
-	text-decoration: line-through;
-	text-decoration-color: rgba(var(--color-red-rgb), 0.45);
+.assist-plus-diff-line {
+	display: flex;
+	padding: 0 var(--size-4-2);
+	white-space: pre-wrap;
+	word-break: break-word;
+	min-height: 1.3em;
 }
 
-.assist-plus-diff-after {
-	background: rgba(var(--color-green-rgb), 0.08);
+.assist-plus-diff-sign {
+	flex-shrink: 0;
+	width: 1.2em;
+	color: var(--text-faint);
+	user-select: none;
+}
+
+.assist-plus-diff-line-same {
+	color: var(--text-muted);
+}
+
+.assist-plus-diff-line-del {
+	background: rgba(var(--color-red-rgb), 0.09);
+}
+
+.assist-plus-diff-line-del .assist-plus-diff-sign {
+	color: var(--text-error);
+}
+
+.assist-plus-diff-line-add {
+	background: rgba(var(--color-green-rgb), 0.09);
+}
+
+.assist-plus-diff-line-add .assist-plus-diff-sign {
+	color: var(--text-success);
+}
+
+.assist-plus-diff-skip {
+	text-align: center;
+	color: var(--text-faint);
+	font-size: var(--font-ui-smaller);
+	padding: var(--size-2-1) 0;
+	user-select: none;
+}
+
+.assist-plus-diff-preview {
+	padding: var(--size-2-3) var(--size-4-3);
+}
+
+.assist-plus-hidden {
+	display: none;
+}
+
+/* Settings: note-group rows */
+.assist-plus-group-row .setting-item-control {
+	flex-wrap: wrap;
+	justify-content: flex-start;
+}
+
+.assist-plus-group-row textarea {
+	flex: 1;
+	min-width: 12em;
 }
 
 .assist-plus-diff-actions {
