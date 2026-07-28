@@ -1,1 +1,68 @@
-# obsidian-assist-plus
+# Assist Plus
+
+Chat with Claude (Anthropic) inside your Obsidian vault — on your own API key, with strict control over what it can see and change.
+
+Assist Plus is built around one idea: **an AI assistant in your vault must be default-deny.** Claude sees nothing unless you explicitly attach it, every request's exact contents are inspectable before and after sending, and nothing is ever written to your vault without a click.
+
+> **Status: v0.1 (M1, private dogfood).** This is the trust core — chat, the permission model, and Read-only/Suggest edit modes. Not yet released publicly.
+
+## What it does
+
+- **Chat sidebar** — a right-sidebar leaf (drag it to the center for a full tab) with streamed markdown replies, a model picker, and a context meter (files in scope, approximate tokens).
+- **Explicit scope** — attach notes via the picker, the "Attach current note" command, or by dragging a note onto the panel. The **"What Claude can see"** panel lists every in-scope file with per-file remove.
+- **Allowlist / denylist** — folders and tags. The denylist (default: `Private/`) wins over everything: denied files are greyed out in the picker, refused on attach, and excluded at send time even if they were attached earlier. A note with `assist: false` in its frontmatter is likewise refused. The allowlist only affects what the picker offers first — in M1 it never includes anything by itself.
+- **Sent-files disclosure** — after every send, the message shows "sent: N files" with the exact list (and whether it went streamed or via the fallback).
+- **Edit modes** — **Read-only** (default): Claude can never change your vault. **Suggest**: proposed edits come back as structured blocks and render as a diff preview; you apply per hunk (or all), and applies only ever target files that were in scope for the conversation.
+- **Export** — "Export conversation to note" writes the transcript (including the sent-files record) to `Assist/Chats/`.
+
+## What gets sent, where, when
+
+- **Where:** requests go **directly from the plugin to `api.anthropic.com`** using your own API key. There is no middleman server, no proxy, no telemetry — nothing else receives anything, ever.
+- **What:** exactly (1) the messages you type in the chat, (2) the full content of the files listed in "What Claude can see" at the moment you press send, and (3) a fixed system prompt. Nothing else — not your vault name, not your file tree, not unattached notes.
+- **When:** only when you press send. There is no background traffic except fetching the model list from your account (`/v1/models`) when you open the settings tab.
+- **Verify it:** every message records its exact payload in the "sent: N files" disclosure, written from the very object the request was built from.
+- **Costs:** usage bills to your own Anthropic account at Anthropic's API rates. This plugin adds no fees.
+
+## What this plugin will never do
+
+- **No telemetry, no middleman.** Your notes and your key talk to `api.anthropic.com` and nowhere else.
+- **No reads outside scope.** The enforcement is structural, not a prompt: the API layer only accepts payloads produced by the scope engine's single `collectPayload` choke point, and that engine applies denylist → `assist: false` → explicit-attachment rules on every send. There is no code path that reads other vault content into a request.
+- **No writes without a click.** In Read-only mode the only write path is the explicit export command. In Suggest mode, disk changes happen only when you press Apply on a specific hunk, only on files that were in scope, with deny rules re-checked at write time. There is no auto-apply.
+- **No key leakage.** The API key is stored in the plugin's local data in your vault, is only ever used to set a request header, is never logged, and is scrubbed from any error text.
+
+## Setup
+
+1. Install and enable the plugin (manual install for now: `main.js`, `manifest.json`, `styles.css` into `<Vault>/.obsidian/plugins/assist-plus/`).
+2. In **Settings → Assist Plus**, paste your Anthropic API key. It is stored locally in your vault's plugin folder — treat your vault's storage as you would any local credential.
+3. Pick a default model (fetched live from your account; there's a custom-model escape hatch).
+4. Open the chat (ribbon icon or "Open chat" command), attach a note, ask away.
+
+### Scope rules, precisely
+
+1. **Denylist wins over everything** — folder prefixes (e.g. `Private`) and tags (e.g. `#private`, nested tags included).
+2. **`assist: false`** in a note's frontmatter refuses that note.
+3. **Explicit attachment** is the only way content enters scope.
+4. **Allowlist** entries are offered first in the picker — nothing more.
+
+Deny rules re-run at attach, send, and apply time, so moving a file into a denied folder takes effect on the very next action.
+
+## M1 scope (honest edition)
+
+Included: chat with streaming (with automatic non-streaming fallback and a retry affordance on dropped connections), the scope engine above, Read-only/Suggest modes, per-hunk diff apply, export command.
+
+Not in M1 (deliberately): Write/auto-apply mode, undo journal, Claude-initiated vault search or tool use, saved-chat browser (conversations live in memory; export is the way to keep one), slash-commands, multi-provider support, embeddings/RAG, mobile-specific UI polish (mobile-safe APIs are used throughout, but the UI is desktop-first for now).
+
+## Development
+
+```bash
+npm install
+npm run dev    # watch build
+npm run build  # type-check + production build
+npm run lint
+```
+
+Source layout: `src/scope/` (the permission engine — read this first), `src/api/` (Anthropic Messages + models), `src/ui/` (chat leaf, scope panel, picker), `src/edits/` (suggest parsing, diff modal), `src/settings*.ts`, `src/main.ts` (lifecycle only).
+
+## License
+
+[0BSD](LICENSE)
