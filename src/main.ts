@@ -15,6 +15,7 @@ export default class AssistPlusPlugin extends Plugin {
 
 	async onload(): Promise<void> {
 		await this.loadSettings();
+		this.seedConversation(this.conversation);
 
 		this.scope = new ScopeEngine(this.app, () => ({
 			allowFolders: this.settings.allowFolders,
@@ -115,7 +116,45 @@ export default class AssistPlusPlugin extends Plugin {
 
 	newConversation(): void {
 		this.conversation = createConversation();
+		this.seedConversation(this.conversation);
 		this.refreshViews();
+	}
+
+	/**
+	 * Default notes from settings — explicit user-typed paths, seeded visibly
+	 * into the panel. Denied or missing ones show as excluded there and are
+	 * skipped by collectPayload; nothing silent.
+	 */
+	private seedConversation(conversation: Conversation): void {
+		for (const path of this.settings.defaultAttachments) {
+			if (!conversation.attachments.includes(path)) {
+				conversation.attachments.push(path);
+			}
+		}
+	}
+
+	/** One-click attach of the note currently open in the editor. */
+	attachActiveFile(): void {
+		const file = this.app.workspace.getActiveFile();
+		if (!file) {
+			new Notice(`${PLUGIN_NAME}: no active note to attach.`);
+			return;
+		}
+		this.attachFile(file);
+	}
+
+	/** Attach every note of a configured group; each file passes the same deny rules. */
+	attachGroup(groupId: string): void {
+		const group = this.settings.noteGroups.find((g) => g.id === groupId);
+		if (!group) return;
+		for (const path of group.paths) {
+			const file = this.app.vault.getAbstractFileByPath(path);
+			if (!(file instanceof TFile)) {
+				new Notice(`${PLUGIN_NAME}: "${path}" not found — skipped.`);
+				continue;
+			}
+			this.attachFile(file);
+		}
 	}
 
 	refreshViews(): void {

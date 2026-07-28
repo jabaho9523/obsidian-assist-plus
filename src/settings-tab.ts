@@ -7,14 +7,21 @@ import {
 import { fetchModels } from "./api/models";
 import type AssistPlusPlugin from "./main";
 import { DEFAULT_SETTINGS, EditMode } from "./settings";
+import { generateId } from "./types";
 
-type ListKey = "allowFolders" | "allowTags" | "denyFolders" | "denyTags";
+type ListKey =
+	| "allowFolders"
+	| "allowTags"
+	| "denyFolders"
+	| "denyTags"
+	| "defaultAttachments";
 
 export class AssistPlusSettingTab extends PluginSettingTab {
 	plugin: AssistPlusPlugin;
 	private lastFetchAt = 0;
 	private modelDropdownEl: HTMLSelectElement | null = null;
 	private modelStatusEl: HTMLElement | null = null;
+	private groupsEl: HTMLElement | null = null;
 
 	constructor(app: App, plugin: AssistPlusPlugin) {
 		super(app, plugin);
@@ -73,6 +80,16 @@ export class AssistPlusSettingTab extends PluginSettingTab {
 			{
 				name: "Allowlisted tags",
 				desc: "Offered first in the attach picker. Attachment is still always explicit.",
+			},
+			{
+				name: "Default notes",
+				desc: "Attached automatically to every new conversation.",
+				aliases: ["context", "always attach"],
+			},
+			{
+				name: "Note groups",
+				desc: "Reusable sets of notes attachable in one action from the chat panel.",
+				aliases: ["context group"],
 			},
 		];
 	}
@@ -181,7 +198,77 @@ export class AssistPlusSettingTab extends PluginSettingTab {
 			"allowTags"
 		);
 
+		new Setting(containerEl).setName("Context").setHeading();
+
+		this.listSetting(
+			"Default notes",
+			"One vault path per line (e.g. Projects/Overview.md). Attached automatically to every new conversation — still visible in the panel, removable per conversation, and the denylist still wins at send time.",
+			"defaultAttachments"
+		);
+
+		new Setting(containerEl)
+			.setName("Note groups")
+			.setDesc(
+				"Reusable sets of notes you can attach in one action from the chat panel — for example the five notes you always use as context."
+			);
+		this.groupsEl = containerEl.createDiv();
+		this.renderGroups(this.groupsEl);
+		new Setting(containerEl).addButton((b) =>
+			b.setButtonText("Add group").onClick(async () => {
+				this.plugin.settings.noteGroups.push({
+					id: generateId(),
+					name: "New group",
+					paths: [],
+				});
+				await this.plugin.saveSettings();
+				if (this.groupsEl) this.renderGroups(this.groupsEl);
+				this.plugin.refreshViews();
+			})
+		);
+
 		void this.refreshModels();
+	}
+
+	private renderGroups(parent: HTMLElement): void {
+		parent.empty();
+		for (const group of this.plugin.settings.noteGroups) {
+			new Setting(parent)
+				.setClass("assist-plus-group-row")
+				.addText((t) => {
+					t.setPlaceholder("Group name");
+					t.setValue(group.name);
+					t.onChange(async (v) => {
+						group.name = v;
+						await this.plugin.saveSettings();
+						this.plugin.refreshViews();
+					});
+				})
+				.addTextArea((t) => {
+					t.inputEl.rows = 3;
+					t.setPlaceholder("One vault path per line");
+					t.setValue(group.paths.join("\n"));
+					t.onChange(async (v) => {
+						group.paths = v
+							.split(/\r?\n/)
+							.map((line) => line.trim())
+							.filter((line) => line.length > 0);
+						await this.plugin.saveSettings();
+					});
+				})
+				.addExtraButton((b) => {
+					b.setIcon("trash-2")
+						.setTooltip("Delete group")
+						.onClick(async () => {
+							this.plugin.settings.noteGroups =
+								this.plugin.settings.noteGroups.filter(
+									(g) => g.id !== group.id
+								);
+							await this.plugin.saveSettings();
+							if (this.groupsEl) this.renderGroups(this.groupsEl);
+							this.plugin.refreshViews();
+						});
+				});
+		}
 	}
 
 	private listSetting(name: string, desc: string, key: ListKey): void {

@@ -1,6 +1,7 @@
 import { App, Component, TFile, setIcon } from "obsidian";
 import { CHARS_PER_TOKEN } from "../constants";
 import { ScopeEngine } from "../scope/scope";
+import { NoteGroup } from "../settings";
 import { Conversation } from "../types";
 
 /**
@@ -17,6 +18,9 @@ export interface ScopePanelDeps {
 	getConversation: () => Conversation;
 	onRemove: (path: string) => void;
 	onAttachFile: (file: TFile) => void;
+	onAttachActive: () => void;
+	getGroups: () => NoteGroup[];
+	onAttachGroup: (groupId: string) => void;
 	openPicker: () => void;
 }
 
@@ -90,11 +94,35 @@ export class ScopePanel {
 		}
 
 		const actions = this.rootEl.createDiv({ cls: "assist-plus-scope-actions" });
-		const attach = actions.createEl("button", { text: "Attach note" });
+		const attachActive = actions.createEl("button", {
+			text: "Attach active note",
+		});
+		attachActive.addEventListener("click", (e) => {
+			e.preventDefault();
+			this.deps.onAttachActive();
+		});
+		const attach = actions.createEl("button", { text: "Attach note…" });
 		attach.addEventListener("click", (e) => {
 			e.preventDefault();
 			this.deps.openPicker();
 		});
+		const groups = this.deps.getGroups();
+		if (groups.length > 0) {
+			const select = actions.createEl("select", {
+				cls: "dropdown",
+				attr: { "aria-label": "Attach note group" },
+			});
+			select.createEl("option", { value: "", text: "Attach group…" });
+			for (const group of groups) {
+				select.createEl("option", { value: group.id, text: group.name });
+			}
+			select.addEventListener("change", () => {
+				if (select.value.length > 0) {
+					this.deps.onAttachGroup(select.value);
+					select.value = "";
+				}
+			});
+		}
 	}
 
 	private meterText(conversation: Conversation): string {

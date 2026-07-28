@@ -9,6 +9,8 @@ import { ScopeDecision, ScopeEngine } from "../scope/scope";
  */
 export class AttachFileModal extends FuzzySuggestModal<TFile> {
 	private decisions = new Map<string, ScopeDecision>();
+	/** The open note sorts first — it's the most common pick. */
+	private readonly activePath: string | null;
 
 	constructor(
 		app: App,
@@ -17,6 +19,7 @@ export class AttachFileModal extends FuzzySuggestModal<TFile> {
 		private readonly onPick: (file: TFile) => void
 	) {
 		super(app);
+		this.activePath = app.workspace.getActiveFile()?.path ?? null;
 		this.setPlaceholder("Attach a note to this conversation…");
 	}
 
@@ -30,11 +33,14 @@ export class AttachFileModal extends FuzzySuggestModal<TFile> {
 	}
 
 	getItems(): TFile[] {
+		const rank = (f: TFile): number => {
+			if (f.path === this.activePath) return 0;
+			return this.decisionFor(f).allowlisted ? 1 : 2;
+		};
 		const files = this.app.vault.getMarkdownFiles();
 		return files.sort((a, b) => {
-			const aAllow = this.decisionFor(a).allowlisted ? 0 : 1;
-			const bAllow = this.decisionFor(b).allowlisted ? 0 : 1;
-			if (aAllow !== bAllow) return aAllow - bAllow;
+			const byRank = rank(a) - rank(b);
+			if (byRank !== 0) return byRank;
 			return a.path.localeCompare(b.path);
 		});
 	}
@@ -54,6 +60,8 @@ export class AttachFileModal extends FuzzySuggestModal<TFile> {
 			});
 		} else if (this.attached.has(match.item.path)) {
 			el.createSpan({ cls: "assist-plus-suggestion-badge", text: "attached" });
+		} else if (match.item.path === this.activePath) {
+			el.createSpan({ cls: "assist-plus-suggestion-badge", text: "active note" });
 		} else if (decision.allowlisted) {
 			el.createSpan({ cls: "assist-plus-suggestion-badge", text: "allowlisted" });
 		}

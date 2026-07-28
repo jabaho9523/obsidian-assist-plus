@@ -5,6 +5,13 @@ export interface CachedModel {
 	name: string;
 }
 
+/** A named, reusable set of notes attachable in one action from the panel. */
+export interface NoteGroup {
+	id: string;
+	name: string;
+	paths: string[];
+}
+
 export interface AssistPlusSettings {
 	/**
 	 * Stored in the vault's plugin data (data.json), like any plugin setting.
@@ -22,6 +29,13 @@ export interface AssistPlusSettings {
 	allowTags: string[];
 	denyFolders: string[];
 	denyTags: string[];
+	/**
+	 * Attached automatically to every NEW conversation. Still explicit (the
+	 * user typed these exact paths), still visible in the panel, still
+	 * removable per conversation, and deny rules still win at send time.
+	 */
+	defaultAttachments: string[];
+	noteGroups: NoteGroup[];
 	/** Cached /v1/models response so settings work offline after first fetch. */
 	modelCache: { fetchedAt: number; models: CachedModel[] } | null;
 }
@@ -35,6 +49,8 @@ export const DEFAULT_SETTINGS: AssistPlusSettings = {
 	allowTags: [],
 	denyFolders: ["Private"],
 	denyTags: [],
+	defaultAttachments: [],
+	noteGroups: [],
 	modelCache: null,
 };
 

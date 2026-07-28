@@ -125,6 +125,13 @@ export class ChatView extends ItemView {
 			onAttachFile: (file) => {
 				this.plugin.attachFile(file);
 			},
+			onAttachActive: () => {
+				this.plugin.attachActiveFile();
+			},
+			getGroups: () => this.plugin.settings.noteGroups,
+			onAttachGroup: (groupId) => {
+				this.plugin.attachGroup(groupId);
+			},
 			openPicker: () => {
 				this.openAttachPicker();
 			},
