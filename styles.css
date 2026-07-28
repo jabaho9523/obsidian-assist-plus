@@ -314,3 +314,58 @@
 .assist-plus-suggest-review {
 	margin-top: var(--size-2-3);
 }
+
+/* Reply actions (copy / insert) */
+.assist-plus-message-actions {
+	margin-left: auto;
+	display: flex;
+	gap: var(--size-2-1);
+	opacity: 0.75;
+}
+
+.assist-plus-message:hover .assist-plus-message-actions,
+.assist-plus-message-actions:focus-within {
+	opacity: 1;
+}
+
+/* Phone & tablet */
+body.is-mobile .assist-plus-icon-btn {
+	padding: var(--size-4-2);
+}
+
+body.is-mobile .assist-plus-input {
+	/* 16px stops iOS from zooming the whole pane on focus */
+	font-size: 16px;
+}
+
+body.is-mobile .assist-plus-send {
+	min-height: var(--size-4-9);
+	padding-left: var(--size-4-3);
+	padding-right: var(--size-4-3);
+}
+
+body.is-mobile .assist-plus-message-actions {
+	opacity: 1;
+}
+
+body.is-mobile .assist-plus-scope-row {
+	padding-top: var(--size-2-3);
+	padding-bottom: var(--size-2-3);
+}
+
+body.is-phone .assist-plus-header {
+	flex-wrap: wrap;
+}
+
+body.is-phone .assist-plus-model-select {
+	flex-basis: 100%;
+}
+
+body.is-phone .assist-plus-scope-summary {
+	flex-wrap: wrap;
+}
+
+body.is-phone .assist-plus-scope-meter {
+	flex-basis: 100%;
+	margin-left: var(--size-4-4);
+}
