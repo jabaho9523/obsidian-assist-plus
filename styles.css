@@ -1,0 +1,316 @@
+/* ===== Assist Plus ===== */
+
+.assist-plus-view {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	gap: var(--size-4-2);
+}
+
+/* Header */
+.assist-plus-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+
+.assist-plus-model-select {
+	flex: 1;
+	min-width: 0;
+}
+
+.assist-plus-icon-btn {
+	background: none;
+	border: none;
+	box-shadow: none;
+	padding: var(--size-2-2);
+	color: var(--text-muted);
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+}
+
+.assist-plus-icon-btn:hover {
+	color: var(--text-normal);
+}
+
+/* Scope panel */
+.assist-plus-scope {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	padding: var(--size-2-3);
+	background: var(--background-secondary);
+	flex-shrink: 0;
+}
+
+.assist-plus-scope-summary {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-3);
+	cursor: pointer;
+	font-weight: var(--font-medium);
+	list-style-position: inside;
+}
+
+.assist-plus-scope-icon {
+	display: inline-flex;
+	color: var(--text-muted);
+}
+
+.assist-plus-scope-meter {
+	margin-left: auto;
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-normal);
+}
+
+.assist-plus-scope-list {
+	margin-top: var(--size-2-3);
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-2-1);
+}
+
+.assist-plus-scope-empty {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	padding: var(--size-2-3);
+}
+
+.assist-plus-scope-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-2-3);
+	padding: var(--size-2-1) var(--size-2-3);
+	border-radius: var(--radius-s);
+	background: var(--background-primary);
+	font-size: var(--font-ui-small);
+}
+
+.assist-plus-scope-name {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.assist-plus-scope-excluded .assist-plus-scope-name {
+	text-decoration: line-through;
+	color: var(--text-muted);
+}
+
+.assist-plus-scope-note {
+	color: var(--text-error);
+	font-size: var(--font-ui-smaller);
+	flex-shrink: 0;
+}
+
+.assist-plus-scope-actions {
+	margin-top: var(--size-2-3);
+}
+
+.assist-plus-drop-active {
+	outline: 2px dashed var(--interactive-accent);
+	outline-offset: -2px;
+}
+
+/* Messages */
+.assist-plus-messages {
+	flex: 1;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: var(--size-4-2);
+	padding: var(--size-2-3) 0;
+}
+
+.assist-plus-empty {
+	color: var(--text-muted);
+	font-size: var(--font-ui-small);
+	padding: var(--size-4-3);
+	text-align: center;
+}
+
+.assist-plus-message {
+	border-radius: var(--radius-m);
+	padding: var(--size-2-3) var(--size-4-2);
+}
+
+.assist-plus-message-user {
+	background: var(--background-secondary);
+}
+
+.assist-plus-message-header {
+	display: flex;
+	align-items: baseline;
+	gap: var(--size-4-2);
+	margin-bottom: var(--size-2-1);
+}
+
+.assist-plus-message-role {
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.assist-plus-sent {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.assist-plus-sent summary {
+	cursor: pointer;
+}
+
+.assist-plus-sent-list {
+	margin: var(--size-2-1) 0 0 0;
+	padding-left: var(--size-4-4);
+}
+
+.assist-plus-sent-meta {
+	list-style: none;
+	margin-top: var(--size-2-1);
+	font-style: italic;
+}
+
+.assist-plus-message-body {
+	user-select: text;
+}
+
+.assist-plus-message-body > p:first-child {
+	margin-top: 0;
+}
+
+.assist-plus-message-body > p:last-child {
+	margin-bottom: 0;
+}
+
+.assist-plus-message-note {
+	color: var(--text-muted);
+	font-size: var(--font-ui-smaller);
+	font-style: italic;
+	margin-top: var(--size-2-1);
+}
+
+.assist-plus-message-error {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	margin-top: var(--size-2-3);
+	padding: var(--size-2-3);
+	border-radius: var(--radius-s);
+	background: rgba(var(--color-red-rgb), 0.1);
+	color: var(--text-error);
+	font-size: var(--font-ui-small);
+}
+
+/* Composer */
+.assist-plus-composer {
+	display: flex;
+	gap: var(--size-2-3);
+	align-items: flex-end;
+	flex-shrink: 0;
+}
+
+.assist-plus-input {
+	flex: 1;
+	resize: vertical;
+	min-height: 3em;
+}
+
+.assist-plus-sending {
+	background-color: var(--background-modifier-error) !important;
+}
+
+/* Attach picker */
+.assist-plus-suggestion-denied {
+	color: var(--text-faint);
+}
+
+.assist-plus-suggestion-badge {
+	float: right;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-s);
+	padding: 0 var(--size-2-2);
+	margin-left: var(--size-2-3);
+}
+
+/* Suggest diff modal */
+.assist-plus-diff-hunk {
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	margin-bottom: var(--size-4-2);
+	overflow: hidden;
+}
+
+.assist-plus-diff-header {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+	padding: var(--size-2-3) var(--size-4-2);
+	background: var(--background-secondary);
+	font-size: var(--font-ui-small);
+}
+
+.assist-plus-diff-path {
+	font-weight: var(--font-medium);
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.assist-plus-diff-status {
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.assist-plus-diff-status-error {
+	color: var(--text-error);
+}
+
+.assist-plus-diff-status-ok {
+	color: var(--text-success);
+}
+
+.assist-plus-diff-body {
+	display: flex;
+	flex-direction: column;
+}
+
+.assist-plus-diff-block {
+	margin: 0;
+	padding: var(--size-2-3) var(--size-4-2);
+	white-space: pre-wrap;
+	word-break: break-word;
+	font-family: var(--font-monospace);
+	font-size: var(--font-smaller);
+}
+
+.assist-plus-diff-before {
+	background: rgba(var(--color-red-rgb), 0.08);
+	text-decoration: line-through;
+	text-decoration-color: rgba(var(--color-red-rgb), 0.45);
+}
+
+.assist-plus-diff-after {
+	background: rgba(var(--color-green-rgb), 0.08);
+}
+
+.assist-plus-diff-actions {
+	padding: var(--size-2-3) var(--size-4-2);
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--size-2-3);
+}
+
+.assist-plus-suggest-review {
+	margin-top: var(--size-2-3);
+}
