@@ -3,6 +3,7 @@ import { PLUGIN_NAME, RIBBON_ICON, VIEW_TYPE_CHAT } from "./constants";
 import { exportConversation } from "./export";
 import { ScopeEngine } from "./scope/scope";
 import { AssistPlusSettings, DEFAULT_SETTINGS } from "./settings";
+import { AssistPlusSettingTab } from "./settings-tab";
 import { Conversation, createConversation } from "./types";
 import { ChatView } from "./ui/ChatView";
 
@@ -73,6 +74,7 @@ export default class AssistPlusPlugin extends Plugin {
 			},
 		});
 
+		this.addSettingTab(new AssistPlusSettingTab(this.app, this));
 	}
 
 	onunload(): void {

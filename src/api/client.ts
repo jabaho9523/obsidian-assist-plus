@@ -82,9 +82,10 @@ export async function sendChat(opts: SendOptions): Promise<SendResult> {
 
 	let response: Response;
 	try {
-		// Streaming needs a real fetch; Anthropic supports CORS for browser
-		// clients when this header is present.
-		response = await fetch(`${ANTHROPIC_API_BASE}/v1/messages`, {
+		// Deliberately window.fetch, not requestUrl: requestUrl cannot stream.
+		// Anthropic supports CORS for browser clients when this header is
+		// present, and connect failures fall back to requestUrl below.
+		response = await window.fetch(`${ANTHROPIC_API_BASE}/v1/messages`, {
 			method: "POST",
 			headers: {
 				"content-type": "application/json",

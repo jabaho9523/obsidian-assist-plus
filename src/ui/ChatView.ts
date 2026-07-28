@@ -120,7 +120,7 @@ export class ChatView extends ItemView {
 		this.inputEl = composer.createEl("textarea", {
 			cls: "assist-plus-input",
 			attr: {
-				placeholder: "Ask about your attached notes… (Enter to send)",
+				placeholder: "Ask about your attached notes…",
 				rows: "3",
 			},
 		});

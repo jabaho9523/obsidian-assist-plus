@@ -89,7 +89,7 @@ export class SuggestDiffModal extends Modal {
 		});
 
 		if (this.applied.has(hunk)) {
-			status.setText("applied ✓");
+			status.setText("Applied ✓");
 			status.addClass("assist-plus-diff-status-ok");
 			return;
 		}
@@ -101,7 +101,7 @@ export class SuggestDiffModal extends Modal {
 			hunk
 		);
 		if (blocked) {
-			status.setText(`blocked: ${blocked.detail}`);
+			status.setText(`Blocked: ${blocked.detail}`);
 			status.addClass("assist-plus-diff-status-error");
 			return;
 		}
