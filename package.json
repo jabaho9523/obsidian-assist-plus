@@ -1,0 +1,41 @@
+{
+	"name": "assist-plus",
+	"version": "0.1.0",
+	"description": "Chat with Claude (Anthropic) inside your vault — on your own API key, with strict control over what it can see and change.",
+	"main": "main.js",
+	"type": "module",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint ."
+	},
+	"keywords": [
+		"obsidian",
+		"obsidian-plugin",
+		"obsidian-md",
+		"claude",
+		"anthropic",
+		"ai",
+		"assistant",
+		"chat",
+		"privacy",
+		"pkm",
+		"knowledge-management",
+		"note-taking"
+	],
+	"author": "Jacob Holm",
+	"license": "0BSD",
+	"devDependencies": {
+		"@eslint/js": "9.30.1",
+		"@types/node": "^16.11.6",
+		"esbuild": "0.25.5",
+		"eslint-plugin-obsidianmd": "^0.4.1",
+		"globals": "14.0.0",
+		"jiti": "2.6.1",
+		"obsidian": "^1.13.1",
+		"tslib": "2.4.0",
+		"typescript": "~5.8.3",
+		"typescript-eslint": "8.35.1"
+	}
+}
