@@ -1,4 +1,4 @@
-import { ItemView, Notice, WorkspaceLeaf, setIcon } from "obsidian";
+import { ItemView, Notice, Platform, WorkspaceLeaf, setIcon } from "obsidian";
 import type AssistPlusPlugin from "../main";
 import { PLUGIN_NAME, VIEW_TYPE_CHAT } from "../constants";
 import {
@@ -9,7 +9,7 @@ import {
 	sendChat,
 } from "../api/client";
 import { SuggestDiffModal } from "../edits/diff-modal";
-import { effectiveDefaultModel } from "../settings";
+import { EditMode, effectiveDefaultModel } from "../settings";
 import { ChatMessage, Conversation, generateId } from "../types";
 import { AttachFileModal } from "./attach-modal";
 import { MessageDeps, StreamingRenderer, renderMessage } from "./messages";
@@ -27,6 +27,7 @@ export class ChatView extends ItemView {
 	private inputEl!: HTMLTextAreaElement;
 	private sendBtn!: HTMLButtonElement;
 	private modelSelect!: HTMLSelectElement;
+	private modeSelect!: HTMLSelectElement;
 	private abortController: AbortController | null = null;
 
 	constructor(
@@ -68,6 +69,7 @@ export class ChatView extends ItemView {
 	/** Full re-render; also called from commands (new conversation, attach). */
 	refresh(): void {
 		this.updateModelSelect();
+		this.modeSelect.value = this.plugin.settings.editMode;
 		this.scopePanel?.render();
 		this.renderMessages();
 	}
@@ -85,6 +87,20 @@ export class ChatView extends ItemView {
 		this.modelSelect.addEventListener("change", () => {
 			this.conversation.modelOverride =
 				this.modelSelect.value === "" ? null : this.modelSelect.value;
+		});
+		// Same global setting as in the settings tab, just reachable in place.
+		this.modeSelect = header.createEl("select", {
+			cls: "dropdown assist-plus-mode-select",
+			attr: { "aria-label": "Edit mode", title: "Edit mode" },
+		});
+		this.modeSelect.createEl("option", { value: "readonly", text: "Read-only" });
+		this.modeSelect.createEl("option", { value: "suggest", text: "Suggest" });
+		this.modeSelect.addEventListener("change", () => {
+			void (async () => {
+				this.plugin.settings.editMode = this.modeSelect.value as EditMode;
+				await this.plugin.saveSettings();
+				this.plugin.refreshViews();
+			})();
 		});
 		const newChat = header.createEl("button", {
 			cls: "assist-plus-icon-btn",
@@ -125,6 +141,8 @@ export class ChatView extends ItemView {
 			},
 		});
 		this.registerDomEvent(this.inputEl, "keydown", (e: KeyboardEvent) => {
+			// On phone/tablet, Enter makes a newline and the Send button sends.
+			if (Platform.isMobile) return;
 			if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
 				e.preventDefault();
 				void this.send();
