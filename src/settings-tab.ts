@@ -84,7 +84,8 @@ export class AssistPlusSettingTab extends PluginSettingTab {
 		new Setting(containerEl)
 			.setName("Anthropic API key")
 			.setDesc(
-				"Stored locally in your vault's plugin folder, like any plugin setting — treat your vault's storage as you would any local credential. " +
+				"Create a key in your Anthropic console at console.anthropic.com (API keys section; requires a funded account). Anthropic (Claude) only — other providers are not supported. " +
+					"Stored locally in your vault's plugin folder, like any plugin setting — treat your vault's storage as you would any local credential. " +
 					"Requests go directly from this plugin to api.anthropic.com; usage bills to your own Anthropic account. The key is never logged and never shown in errors."
 			)
 			.addText((t) => {
