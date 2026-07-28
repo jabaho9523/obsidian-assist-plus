@@ -4,9 +4,10 @@ import { Conversation } from "../types";
 import { SuggestHunk } from "./suggest-parser";
 
 /**
- * Applying a suggestion is the ONLY vault write path besides the export
- * command, and it only ever runs from an explicit per-hunk click in the diff
- * modal. Guards, in order:
+ * Applying a suggestion is one of the three explicit-click write paths
+ * (alongside the export command and insert-at-cursor on replies), and it only
+ * ever runs from an explicit per-hunk click in the diff modal. Guards, in
+ * order:
  *
  *  1. The target must have been in scope for this conversation — either
  *     currently attached or actually sent (recorded in a sent manifest).

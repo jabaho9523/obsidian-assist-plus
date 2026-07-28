@@ -1,4 +1,11 @@
-import { App, Component, MarkdownRenderer } from "obsidian";
+import {
+	App,
+	Component,
+	MarkdownRenderer,
+	MarkdownView,
+	Notice,
+	setIcon,
+} from "obsidian";
 import { SuggestHunk, parseSuggestBlocks } from "../edits/suggest-parser";
 import { ChatMessage } from "../types";
 
@@ -64,6 +71,14 @@ export function renderMessage(
 
 	if (
 		message.role === "assistant" &&
+		message.status !== "streaming" &&
+		message.text.length > 0
+	) {
+		renderReplyActions(header, bodyEl, message, deps);
+	}
+
+	if (
+		message.role === "assistant" &&
 		message.status === "complete" &&
 		deps.onReviewSuggestions
 	) {
@@ -91,6 +106,71 @@ export function renderMessage(
 	}
 
 	return { bodyEl };
+}
+
+/**
+ * Copy / insert-at-cursor for a reply. Both act on the text the user marked
+ * inside this reply, or the whole reply when nothing is marked. Insert is an
+ * explicit-click write into the open editor at the cursor (undoable there) —
+ * one of the three explicit-click write paths alongside export and per-hunk
+ * apply. Copying/inserting the raw markdown source, not the rendered HTML.
+ */
+function renderReplyActions(
+	header: HTMLElement,
+	bodyEl: HTMLElement,
+	message: ChatMessage,
+	deps: MessageDeps
+): void {
+	const actions = header.createDiv({ cls: "assist-plus-message-actions" });
+
+	const pickText = (): string => selectionWithin(bodyEl) || message.text;
+
+	const copy = actions.createEl("button", {
+		cls: "assist-plus-icon-btn",
+		attr: { "aria-label": "Copy reply or marked text" },
+	});
+	setIcon(copy, "copy");
+	copy.addEventListener("click", () => {
+		void navigator.clipboard
+			.writeText(pickText())
+			.then(() => new Notice("Copied to clipboard"))
+			.catch(() => new Notice("Copy failed"));
+	});
+
+	const insert = actions.createEl("button", {
+		cls: "assist-plus-icon-btn",
+		attr: { "aria-label": "Insert into the active note" },
+	});
+	setIcon(insert, "text-cursor-input");
+	insert.addEventListener("click", () => {
+		const editor = mostRecentMarkdownEditor(deps.app);
+		if (!editor) {
+			new Notice("Open a note in the editor to insert into.");
+			return;
+		}
+		editor.replaceSelection(pickText());
+	});
+}
+
+/** Text the user has marked inside this element, or "" when none. */
+function selectionWithin(el: HTMLElement): string {
+	const selection = window.getSelection();
+	if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+		return "";
+	}
+	const range = selection.getRangeAt(0);
+	if (!el.contains(range.commonAncestorContainer)) return "";
+	return selection.toString();
+}
+
+/**
+ * The editor to insert into. Clicking a sidebar button moves focus here, so
+ * "active view" would be this leaf — use the most recent main-area leaf.
+ */
+function mostRecentMarkdownEditor(app: App) {
+	const leaf = app.workspace.getMostRecentLeaf(app.workspace.rootSplit);
+	const view = leaf?.view;
+	return view instanceof MarkdownView ? view.editor : null;
 }
 
 /**

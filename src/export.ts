@@ -3,10 +3,11 @@ import { EXPORT_FOLDER, PLUGIN_NAME } from "./constants";
 import { Conversation } from "./types";
 
 /**
- * "Export conversation to note" — the ONE vault write path that exists in
- * Read-only mode, and it only runs when the user invokes the command. Writes
- * a transcript (including the per-send sent-files record) to Assist/Chats/.
- * The API key never appears in conversation data, so it cannot end up here.
+ * "Export conversation to note" — an explicit-click write path (alongside
+ * insert-at-cursor on replies; Suggest mode adds per-hunk apply). Only runs
+ * when the user invokes the command. Writes a transcript (including the
+ * per-send sent-files record) to Assist/Chats/. The API key never appears in
+ * conversation data, so it cannot end up here.
  */
 export async function exportConversation(
 	app: App,
