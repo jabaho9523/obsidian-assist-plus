@@ -6,7 +6,11 @@ import {
 	Notice,
 	setIcon,
 } from "obsidian";
-import { SuggestHunk, parseSuggestBlocks } from "../edits/suggest-parser";
+import {
+	SuggestHunk,
+	parseSuggestBlocks,
+	stripSuggestBlocks,
+} from "../edits/suggest-parser";
 import { ChatMessage } from "../types";
 
 /**
@@ -58,11 +62,24 @@ export function renderMessage(
 		});
 	}
 
+	// In Suggest mode, valid suggest blocks display as a compact callout so
+	// the reply reads as prose, not code; the diff modal shows the change.
+	let hunks: SuggestHunk[] = [];
+	let displayText = message.text;
+	if (
+		message.role === "assistant" &&
+		message.status === "complete" &&
+		deps.onReviewSuggestions
+	) {
+		hunks = parseSuggestBlocks(message.text);
+		if (hunks.length > 0) displayText = stripSuggestBlocks(message.text);
+	}
+
 	const bodyEl = wrapper.createDiv({ cls: "assist-plus-message-body" });
 	if (message.status !== "streaming" && message.text.length > 0) {
 		void MarkdownRenderer.render(
 			deps.app,
-			message.text,
+			displayText,
 			bodyEl,
 			"",
 			deps.component
@@ -77,19 +94,13 @@ export function renderMessage(
 		renderReplyActions(header, bodyEl, message, deps);
 	}
 
-	if (
-		message.role === "assistant" &&
-		message.status === "complete" &&
-		deps.onReviewSuggestions
-	) {
-		const hunks = parseSuggestBlocks(message.text);
-		if (hunks.length > 0) {
-			const review = wrapper.createEl("button", {
-				cls: "mod-cta assist-plus-suggest-review",
-				text: `Review ${hunks.length} suggested ${hunks.length === 1 ? "edit" : "edits"}…`,
-			});
-			review.addEventListener("click", () => deps.onReviewSuggestions?.(hunks));
-		}
+	if (hunks.length > 0) {
+		const review = wrapper.createEl("button", {
+			cls: "mod-cta assist-plus-suggest-review",
+			text: `Review ${hunks.length} suggested ${hunks.length === 1 ? "edit" : "edits"}…`,
+		});
+		const found = hunks;
+		review.addEventListener("click", () => deps.onReviewSuggestions?.(found));
 	}
 
 	if (message.stopped) {

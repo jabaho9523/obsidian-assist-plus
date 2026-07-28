@@ -43,7 +43,9 @@ export function buildSystemPrompt(
 			">>>>>>> REPLACEMENT",
 			"```",
 			"",
-			"Rules: copy the ORIGINAL span verbatim from the attached file content (it is matched exactly, whitespace included); keep spans minimal but unambiguous; one block per independent change; only target files listed in <attached_files>. Nothing is applied automatically — the user reviews each suggestion as a diff and applies it explicitly."
+			"Rules: copy the ORIGINAL span verbatim from the attached file content (it is matched exactly, whitespace included); only target files listed in <attached_files>. Nothing is applied automatically — the user reviews each suggestion as a diff and applies it explicitly.",
+			"Keep each ORIGINAL span as SMALL as possible: the smallest contiguous run of lines that actually changes, plus at most one or two unchanged neighbouring lines when needed to make the match unique.",
+			"Never rewrite a whole note in one block. Split the work into several small blocks — one per independent change — so the user can apply them selectively."
 		);
 	}
 

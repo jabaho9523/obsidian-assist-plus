@@ -23,6 +23,21 @@ export interface SuggestHunk {
 
 const FENCE_RE = /```suggest[ \t]*\r?\n([\s\S]*?)\r?\n```/g;
 
+/**
+ * For chat display in Suggest mode: swap each VALID suggest block for a
+ * compact callout so replies read as normal prose instead of raw code (the
+ * diff modal is where the change itself is inspected). Invalid blocks are
+ * left untouched — they stay visible as plain code, matching the rule that
+ * anything unparseable is inert.
+ */
+export function stripSuggestBlocks(markdown: string): string {
+	return markdown.replace(FENCE_RE, (whole: string, inner: string) => {
+		const hunk = parseInner(inner);
+		if (!hunk) return whole;
+		return `> [!note] Suggested edit — \`${hunk.file}\`\n> Review and apply it with the button below.`;
+	});
+}
+
 export function parseSuggestBlocks(markdown: string): SuggestHunk[] {
 	const hunks: SuggestHunk[] = [];
 	for (const match of markdown.matchAll(FENCE_RE)) {
