@@ -1,7 +1,7 @@
 {
 	"id": "assist-plus",
 	"name": "Assist Plus",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "1.7.2",
 	"description": "Chat with Claude (Anthropic) inside your vault — on your own API key, with strict control over what it can see and change.",
 	"author": "Jacob Holm",
