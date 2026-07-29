@@ -22,6 +22,7 @@ Assist Plus is built around one idea: **an AI assistant in your vault must be de
 - **Where:** requests go **directly from the plugin to `api.anthropic.com`** using your own API key. There is no middleman server, no proxy, no telemetry — nothing else receives anything, ever.
 - **What:** exactly (1) the messages you type in the chat, (2) the full content of the files listed in "What Claude can see" at the moment you press send, and (3) a fixed system prompt. Nothing else — not your vault name, not your file tree, not unattached notes.
 - **When:** only when you press send. There is no background traffic except fetching the model list from your account (`/v1/models`) when you open the settings tab.
+- **File paths:** the attach picker lists your vault's markdown file paths *locally* so you can choose what to attach. Unattached files never leave the app — not their content, not even their names. Only the paths of files you attached appear in a request.
 - **Verify it:** every message records its exact payload in the "sent: N files" disclosure, written from the very object the request was built from.
 - **Costs:** usage bills to your own Anthropic account at Anthropic's API rates. This plugin adds no fees.
 
@@ -31,6 +32,7 @@ Assist Plus is built around one idea: **an AI assistant in your vault must be de
 - **No reads outside scope.** The enforcement is structural, not a prompt: the API layer only accepts payloads produced by the scope engine's single `collectPayload` choke point, and that engine applies denylist → `assist: false` → explicit-attachment rules on every send. There is no code path that reads other vault content into a request.
 - **No writes without a click.** Every write path is a single explicit click by you: the export command, the insert-at-cursor button on a reply (into your open editor, undoable there), and — in Suggest mode only — Apply on a specific hunk, only on files that were in scope, with deny rules re-checked at write time. There is no auto-apply and no background write of any kind.
 - **No key leakage.** The API key is stored in the plugin's local data in your vault, is only ever used to set a request header, is never logged, and is scrubbed from any error text.
+- **No clipboard reading.** The copy button *writes* your selection or the reply to the clipboard — the plugin never reads what's on your clipboard.
 
 ## Setup
 
