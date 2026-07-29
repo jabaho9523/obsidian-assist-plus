@@ -22,6 +22,9 @@ jobs:
             - run: npm ci
             - run: npm run build
             - name: Attest build provenance
+              # Attestations aren't available on private repos (Enterprise-only);
+              # runs automatically once the repo goes public.
+              if: ${{ !github.event.repository.private }}
               uses: actions/attest-build-provenance@v3
               with:
                   subject-path: |
