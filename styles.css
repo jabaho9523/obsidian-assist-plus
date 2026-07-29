@@ -221,8 +221,9 @@
 	min-height: 3em;
 }
 
-.assist-plus-sending {
-	background-color: var(--background-modifier-error) !important;
+/* Three classes outrank the theme's button.mod-cta rules, hover included. */
+.assist-plus-composer .assist-plus-send.assist-plus-sending {
+	background-color: var(--background-modifier-error);
 }
 
 /* Attach picker */

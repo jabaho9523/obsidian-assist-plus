@@ -40,11 +40,17 @@ export function stripSuggestBlocks(markdown: string): string {
 
 export function parseSuggestBlocks(markdown: string): SuggestHunk[] {
 	const hunks: SuggestHunk[] = [];
-	for (const match of markdown.matchAll(FENCE_RE)) {
+	// Fresh regex instance: exec() tracks lastIndex, and the module-level
+	// FENCE_RE must stay stateless for its other users.
+	const fence = new RegExp(FENCE_RE);
+	let match = fence.exec(markdown);
+	while (match !== null) {
 		const inner = match[1];
-		if (inner === undefined) continue;
-		const hunk = parseInner(inner);
-		if (hunk) hunks.push(hunk);
+		if (inner !== undefined) {
+			const hunk = parseInner(inner);
+			if (hunk) hunks.push(hunk);
+		}
+		match = fence.exec(markdown);
 	}
 	return hunks;
 }

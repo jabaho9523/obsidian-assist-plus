@@ -45,7 +45,8 @@ function parseEvent(raw: string): SseEvent | null {
 		if (line.startsWith("event:")) {
 			event = line.slice(6).trim();
 		} else if (line.startsWith("data:")) {
-			dataLines.push(line.slice(5).trimStart());
+			// Per SSE spec, a single space after the colon is not payload.
+			dataLines.push(line.slice(5).replace(/^ /, ""));
 		}
 	}
 	if (event === "" && dataLines.length === 0) return null;
