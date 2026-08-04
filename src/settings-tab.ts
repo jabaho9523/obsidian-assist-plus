@@ -2,11 +2,10 @@ import {
 	App,
 	PluginSettingTab,
 	Setting,
-	SettingDefinitionItem,
 } from "obsidian";
 import { fetchModels } from "./api/models";
 import type AssistPlusPlugin from "./main";
-import { DEFAULT_SETTINGS, EditMode } from "./settings";
+import { EditMode } from "./settings";
 import { generateId } from "./types";
 
 type ListKey =
@@ -26,72 +25,6 @@ export class AssistPlusSettingTab extends PluginSettingTab {
 	constructor(app: App, plugin: AssistPlusPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
-	}
-
-	/**
-	 * Declarative definitions for the settings-search index (Obsidian 1.13+).
-	 * Rendering still happens in display() because minAppVersion predates the
-	 * declarative renderer; keys and defaults mirror the imperative UI.
-	 */
-	getSettingDefinitions(): SettingDefinitionItem[] {
-		return [
-			{
-				name: "Anthropic API key",
-				desc: "Your own key; requests go directly to api.anthropic.com.",
-				aliases: ["API key", "token", "anthropic"],
-			},
-			{
-				name: "Default model",
-				desc: "Fetched from your account (/v1/models); pick the default for new conversations.",
-				aliases: ["claude", "model"],
-			},
-			{
-				name: "Custom model ID",
-				desc: "Manual escape hatch; overrides the dropdown when set.",
-			},
-			{
-				name: "Edit mode",
-				desc: "Read-only (Claude can never change the vault) or Suggest (diffs you apply per hunk).",
-				aliases: ["read-only", "suggest"],
-				control: {
-					type: "dropdown",
-					key: "editMode",
-					defaultValue: DEFAULT_SETTINGS.editMode,
-					options: {
-						readonly: "Read-only",
-						suggest: "Suggest",
-					},
-				},
-			},
-			{
-				name: "Denied folders",
-				desc: "Files under these folders can never be attached or sent. Denylist wins over everything.",
-				aliases: ["denylist", "private", "exclude"],
-			},
-			{
-				name: "Denied tags",
-				desc: "Notes carrying these tags can never be attached or sent.",
-			},
-			{
-				name: "Allowlisted folders",
-				desc: "Offered first in the attach picker. Attachment is still always explicit.",
-				aliases: ["allowlist"],
-			},
-			{
-				name: "Allowlisted tags",
-				desc: "Offered first in the attach picker. Attachment is still always explicit.",
-			},
-			{
-				name: "Default notes",
-				desc: "Attached automatically to every new conversation.",
-				aliases: ["context", "always attach"],
-			},
-			{
-				name: "Note groups",
-				desc: "Reusable sets of notes attachable in one action from the chat panel.",
-				aliases: ["context group"],
-			},
-		];
 	}
 
 	display(): void {
