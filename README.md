@@ -4,8 +4,6 @@ Chat with Claude (Anthropic) inside your Obsidian vault — on your own API key,
 
 Assist Plus is built around one idea: **an AI assistant in your vault must be default-deny.** Claude sees nothing unless you explicitly attach it, every request's exact contents are inspectable before and after sending, and nothing is ever written to your vault without a click.
 
-> **Status: v0.1 (M1, private dogfood).** This is the trust core — chat, the permission model, and Read-only/Suggest edit modes. Not yet released publicly.
-
 ## What it does
 
 - **Chat sidebar** — a right-sidebar leaf (drag it to the center for a full tab) with streamed markdown replies, a model picker, an edit-mode switcher (Read-only ↔ Suggest, right in the header), and a context meter (files in scope, approximate tokens).
@@ -47,7 +45,7 @@ Assist Plus is built around one idea: **an AI assistant in your vault must be de
 
 ### Install and go
 
-1. Install and enable the plugin (manual install for now: `main.js`, `manifest.json`, `styles.css` into `<Vault>/.obsidian/plugins/assist-plus/`).
+1. Install and enable **Assist Plus** from **Settings → Community plugins → Browse**.
 2. In **Settings → Assist Plus**, paste your Anthropic API key. It is stored locally in your vault's plugin folder — treat your vault's storage as you would any local credential.
 3. Pick a default model (fetched live from your account; there's a custom-model escape hatch).
 4. Open the chat (ribbon icon or "Open chat" command), attach a note, ask away.
@@ -79,6 +77,17 @@ npm run lint
 ```
 
 Source layout: `src/scope/` (the permission engine — read this first), `src/api/` (Anthropic Messages + models), `src/ui/` (chat leaf, scope panel, picker), `src/edits/` (suggest parsing, diff modal), `src/settings*.ts`, `src/main.ts` (lifecycle only).
+
+## Plus Plugin Family
+
+Part of the **Plus Plugin Family** for Obsidian — free, open-source, local-first:
+
+- **[Paste Plus](https://github.com/jabaho9523/obsidian-paste-plus)** — Smart paste: URLs become titled links, images get clean filenames, HTML converts to markdown.
+- **[Vault Plus](https://github.com/jabaho9523/obsidian-vault-plus)** — Vault health dashboard: find and fix orphans, broken links, empty notes, duplicates, and more.
+- **[Link Plus](https://github.com/jabaho9523/obsidian-link-plus)** — Find every unlinked mention in your vault and convert them to wikilinks — one click or batch.
+- **[Meetings Plus](https://github.com/jabaho9523/obsidian-meetings-plus)** — Subscribe to calendars and create pre-filled meeting notes in one click. ICS-based, privacy-first.
+- **[Tasks Plus](https://github.com/jabaho9523/obsidian-tasks-plus)** — Calm GTD over plain markdown: Inbox, Today, Upcoming, Anytime, Someday, Logbook.
+- **Assist Plus** — Chat with Claude on your own API key, with strict control over what it sees and changes.
 
 ## License
 
